@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Questify — Gamify Your Spending Habit</title>
+  <meta name="description" content="Questify turns personal finance into quests, streaks, and rewards so building better spending habits feels fun." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #181c20;
+      --surface: #21272e;
+      --sage: #6aaf82;
+      --gold: #c9a86c;
+      --cream: #e8e2d9;
+      --muted: #b8b1a8;
+      --shadow: rgba(8, 10, 12, 0.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--cream);
+      background: radial-gradient(900px 700px at 10% 0%, #25303a 0%, transparent 60%),
+                  radial-gradient(800px 600px at 90% 20%, #1f2b28 0%, transparent 55%),
+                  linear-gradient(180deg, #161a1e 0%, #13171b 100%);
+      font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, sans-serif;
+      min-height: 100vh;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px clamp(20px, 6vw, 80px);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+      background: rgba(24, 28, 32, 0.72);
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .logo-mark {
+      width: 120px;
+      height: 40px;
+      object-fit: contain;
+      display: block;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    nav a:hover { color: var(--cream); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 40px;
+      padding: 40px clamp(20px, 6vw, 80px) 80px;
+      align-items: center;
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-weight: 700;
+      font-size: clamp(2.6rem, 6vw, 4.2rem);
+      line-height: 1.05;
+      margin: 0 0 16px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin: 0 0 26px;
+    }
+
+    .cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn.primary {
+      background: var(--sage);
+      color: #101312;
+      box-shadow: 0 14px 26px rgba(106, 175, 130, 0.28);
+    }
+
+    .btn.secondary {
+      border-color: var(--cream);
+      color: var(--cream);
+      background: transparent;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .hero-card {
+      background: var(--surface);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 25px 60px var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 199, 79, 0.7) 0%, transparent 70%);
+      opacity: 0.8;
+    }
+
+    .stat-grid {
+      display: grid;
+      background: radial-gradient(circle, rgba(201, 168, 108, 0.5) 0%, transparent 70%);
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 20px rgba(28, 23, 18, 0.08);
+    }
+
+    .stat span {
+      color: #1c2329;
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .section {
+      padding: 20px clamp(20px, 6vw, 80px) 80px;
+    }
+
+    .section h2 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      margin: 0 0 16px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .feature {
+      background: #fff;
+      color: #1c2329;
+      padding: 22px;
+      border-radius: 18px;
+      border: 1px solid rgba(28, 23, 18, 0.08);
+      min-height: 180px;
+    }
+
+    .feature h3 {
+      margin: 0 0 8px;
+      border: 1px solid rgba(232, 226, 217, 0.08);
+    }
+
+    .quest-strip {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .quest {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 16px 18px;
+      border: 1px solid rgba(106, 175, 130, 0.25);
+      box-shadow: 0 12px 28px rgba(8, 10, 12, 0.35);
+      gap: 16px;
+    }
+
+    .pill {
+      background: var(--surface);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px dashed rgba(232, 226, 217, 0.18);
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .pill.sun { background: var(--gold); color: #3a2a00; }
+    .pill.spice { background: var(--sage); color: #101312; }
+    .pill.leaf { background: #8aa0ad; color: #101312; }
+
+    .quest-content {
+      display: grid;
+      gap: 6px;
+    }
+
+    .quest-title {
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .quest-xp {
+      font-size: 0.85rem;
+      color: var(--sage);
+      font-weight: 600;
+    }
+
+    .quest-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--sage);
+      color: #101312;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .quest.completed .quest-title {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 30px clamp(20px, 6vw, 80px) 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      color: var(--muted);
+    }
+
+    .reveal.delay-1 { animation-delay: 0.2s; }
+    .reveal.delay-2 { animation-delay: 0.4s; }
+    .reveal.delay-3 { animation-delay: 0.6s; }
+
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .screenshot-card {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 22px;
+      border: 1px dashed rgba(232, 226, 217, 0.25);
+      background: rgba(24, 28, 32, 0.35);
+      aspect-ratio: 9 / 16;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.7rem;
+      justify-self: center;
+    }
+
+    .screenshot-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .game-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(8, 10, 12, 0.4);
+      border: 1px solid rgba(106, 175, 130, 0.25);
+      max-width: 460px;
+    }
+
+    .game-media {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 22px;
+      overflow: visible;
+      border: 1px solid rgba(232, 226, 217, 0.2);
+      background: rgba(24, 28, 32, 0.35);
+      aspect-ratio: auto;
+      justify-self: center;
+    }
+
+    .game-media img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      max-height: 480px;
+    }
+
+    .game-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(106, 175, 130, 0.16);
+      color: var(--sage);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 720px) {
+      nav { display: none; }
+      .hero-card { order: -1; }
+      .stat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <header>
+    <div class="logo">
+      <img class="logo-mark" src="logo.png" alt="Questify logo" />
+      <span>Questify</span>
+    </div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#budget-invaders">Budget Invaders</a>
+      <a href="#quests">Quests</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1 class="reveal">Gamify your spending habit.</h1>
+        <p class="reveal delay-1">Questify turns daily spending into quests, streaks, and rewards. Build smarter money habits while leveling up your character and your confidence.</p>
+        <div class="cta reveal delay-2">
+          <a class="btn primary" href="https://github.com/TedjaSatedji/tugasakhir_mobile/releases/download/1.5/Questify.1.5.apk">Download app</a>
+          <a class="btn secondary" href="#features">See how it works</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenshots" class="section">
+      <h2>Screenshots</h2>
+      <p style="color: var(--muted); max-width: 620px;">Looks good huh? We think so too!</p>
+      <div class="screenshot-grid">
+        <div class="screenshot-card">
+          <img src="Screenshot1.png" alt="Questify screenshot 1" />
+        </div>
+        <div class="screenshot-card">
+          <img src="Screenshot2.png" alt="Questify screenshot 2" />
+        </div>
+        <div class="screenshot-card">
+          <img src="Screenshot3.png" alt="Questify screenshot 3" />
+        </div>
+      </div>
+    </section>
+
+    <section id="budget-invaders" class="section">
+      <div class="game-grid">
+        <div class="game-card">
+          <span class="game-chip">Budget Invaders</span>
+          <h2 style="margin: 14px 0 12px;">Mini-game that turns savings into power-ups.</h2>
+          <p style="color: var(--muted); margin: 0;">Blast expense enemies, earn coins, and upgrade your ship. Control with touch or device tilt using the accelerometer.</p>
+        </div>
+        <div class="game-media">
+          <img src="ScreenshotGame.png" alt="Budget Invaders gameplay" />
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <h2>Make finance feel like a game.</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <h3>Quest-based tracking</h3>
+          <p>Small challenges keep you consistent: log spending. hit targets. save every penny.</p>
+        </div>
+        <div class="feature">
+          <h3>Streaks & rewards</h3>
+          <p>Keep streaks to earn game power-ups and profile cosmetics, so progress feels rewarding.</p>
+        </div>
+        <div class="feature">
+          <h3>Character progression</h3>
+          <p>Level up your avatar as your wallet improves. Your progress is visible and motivating.</p>
+        </div>
+        <div class="feature">
+          <h3>AI receipt scan</h3>
+          <p>Send a photo of a receipt or screenshot and Questify auto-fills your spending details.</p>
+        </div>
+        <div class="feature">
+          <h3>Offline-first sync</h3>
+          <p>Log everything on the go. Syncs when you reconnect, so no quest progress is lost.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quests" class="section">
+      <h2>Daily quest</h2>
+      <div class="quest-strip">
+        <div class="quest completed">
+          <div class="quest-content">
+            <span class="quest-title">Record 1 Financial Transaction</span>
+            <span class="quest-xp">+20 XP</span>
+          </div>
+          <span class="quest-check">&#10003;</span>
+        </div>
+        <div class="quest completed">
+          <div class="quest-content">
+            <span class="quest-title">Set aside money for Savings Target</span>
+            <span class="quest-xp">+50 XP</span>
+          </div>
+          <span class="quest-check">&#10003;</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>Questify — Gamify your spending habit.</span>
+    <span>Made for daily money quests.</span>
+  </footer>
+</body>
+</html>
